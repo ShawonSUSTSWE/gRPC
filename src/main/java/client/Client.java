@@ -16,6 +16,13 @@ public class Client {
         boolean authorized = false;
         Scanner input = new Scanner(System.in);
 
+        System.out.println("Are you a new User?(Yes/No)");
+        String choice = input.nextLine();
+
+        if(choice.equals("Yes")) {
+            registration(userBlockingStub);
+        }
+
         while(!authorized) {
             System.out.println("Please enter your Username: ");
             userName = input.next();
@@ -29,6 +36,11 @@ public class Client {
             }
             System.out.println(loginResponse.getMessage());
         }
+    }
+
+    private static void registration(userGrpc.userBlockingStub userBlockingStub) {
+
+        Scanner input = new Scanner(System.in);
 
         System.out.println("Enter your UserID: ");
         int id = input.nextInt();
@@ -36,10 +48,15 @@ public class Client {
         System.out.println("Enter your Name: ");
         String name = input.nextLine();
         System.out.println("Which country do you live in > ");
-        String country = input.next();
+        String country = input.nextLine();
+        System.out.println("Now Enter a Username: ");
+        String userName = input.nextLine();
+        System.out.println("Now Enter a password: ");
+        String password = input.nextLine();
+
 
         User.RegistrationRequest registrationRequest = User.RegistrationRequest.newBuilder().setUserid(id)
-                .setName(name).setCountry(country).build();
+                .setName(name).setCountry(country).setUsername(userName).setPassword(password).build();
         User.RegistrationResponse registrationResponse = userBlockingStub.userRegistration(registrationRequest);
         System.out.println(registrationResponse.getResponseMessage());
     }

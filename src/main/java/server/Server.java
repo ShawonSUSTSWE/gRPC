@@ -13,7 +13,6 @@ public class Server {
         io.grpc.Server server = ServerBuilder.forPort(2046).addService(new UserService()).build();
         server.start();
         logger.info("Server started at port " + server.getPort());
-
         server.awaitTermination();
     }
 }

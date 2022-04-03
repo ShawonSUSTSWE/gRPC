@@ -162,7 +162,7 @@ public final class userGrpc {
     /**
      */
     public void userRegistration(com.demo.grpc.User.RegistrationRequest request,
-        io.grpc.stub.StreamObserver<com.demo.grpc.User.RegistrationResponse> responseObserver) throws SQLException {
+        io.grpc.stub.StreamObserver<com.demo.grpc.User.RegistrationResponse> responseObserver) throws SQLException, ClassNotFoundException {
       asyncUnimplementedUnaryCall(getUserRegistrationMethod(), responseObserver);
     }
 
@@ -361,7 +361,7 @@ public final class userGrpc {
           try {
             serviceImpl.userRegistration((User.RegistrationRequest) request,
                 (io.grpc.stub.StreamObserver<User.RegistrationResponse>) responseObserver);
-          } catch (SQLException e) {
+          } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
           }
           break;

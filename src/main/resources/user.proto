@@ -22,6 +22,8 @@ message RegistrationRequest {
     int32 userid = 1;
     string name = 2;
     string country = 3;
+    string username = 4;
+    string password = 5;
 }
 
 message RegistrationResponse {
