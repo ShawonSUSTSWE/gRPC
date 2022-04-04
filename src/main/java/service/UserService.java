@@ -104,6 +104,7 @@ public class UserService extends userGrpc.userImplBase {
         while (rs.next()) {
             if(rs.getString(1).equals(userName)) {
                 salt = rs.getString(3);
+                break;
             }
         }
         password = passwordHasher.generateHash(Base64.decode(salt));
