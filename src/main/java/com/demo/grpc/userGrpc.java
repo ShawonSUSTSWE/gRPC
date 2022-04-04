@@ -1,5 +1,6 @@
 package com.demo.grpc;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
@@ -155,14 +156,14 @@ public final class userGrpc {
     /**
      */
     public void login(com.demo.grpc.User.LoginRequest request,
-        io.grpc.stub.StreamObserver<com.demo.grpc.User.LogResponse> responseObserver) throws SQLException, ClassNotFoundException {
+        io.grpc.stub.StreamObserver<com.demo.grpc.User.LogResponse> responseObserver) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
       asyncUnimplementedUnaryCall(getLoginMethod(), responseObserver);
     }
 
     /**
      */
     public void userRegistration(com.demo.grpc.User.RegistrationRequest request,
-        io.grpc.stub.StreamObserver<com.demo.grpc.User.RegistrationResponse> responseObserver) throws SQLException, ClassNotFoundException {
+        io.grpc.stub.StreamObserver<com.demo.grpc.User.RegistrationResponse> responseObserver) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
       asyncUnimplementedUnaryCall(getUserRegistrationMethod(), responseObserver);
     }
 
@@ -353,7 +354,7 @@ public final class userGrpc {
                 (io.grpc.stub.StreamObserver<User.LogResponse>) responseObserver);
           } catch (SQLException e) {
             e.printStackTrace();
-          } catch (ClassNotFoundException e) {
+          } catch (ClassNotFoundException | NoSuchAlgorithmException e) {
             e.printStackTrace();
           }
           break;
@@ -361,7 +362,7 @@ public final class userGrpc {
           try {
             serviceImpl.userRegistration((User.RegistrationRequest) request,
                 (io.grpc.stub.StreamObserver<User.RegistrationResponse>) responseObserver);
-          } catch (SQLException | ClassNotFoundException e) {
+          } catch (SQLException | ClassNotFoundException | NoSuchAlgorithmException e) {
             e.printStackTrace();
           }
           break;

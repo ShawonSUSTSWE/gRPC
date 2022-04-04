@@ -2,13 +2,15 @@ package client;
 
 import com.demo.grpc.User;
 import com.demo.grpc.userGrpc;
+import hasher.PasswordHasher;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class Client {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost", 2046).usePlaintext().build();
         userGrpc.userBlockingStub userBlockingStub = new userGrpc.userBlockingStub(managedChannel);
 
@@ -38,7 +40,7 @@ public class Client {
         }
     }
 
-    private static void registration(userGrpc.userBlockingStub userBlockingStub) {
+    private static void registration(userGrpc.userBlockingStub userBlockingStub) throws NoSuchAlgorithmException {
 
         Scanner input = new Scanner(System.in);
 

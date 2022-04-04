@@ -2,8 +2,12 @@ package service;
 
 import com.demo.grpc.User;
 import com.demo.grpc.userGrpc;
+import com.google.api.client.http.ByteArrayContent;
+import com.mysql.cj.util.Base64Decoder;
 import hasher.PasswordHasher;
+import io.grpc.netty.shaded.io.netty.handler.codec.base64.Base64Encoder;
 import io.grpc.stub.StreamObserver;
+import org.bouncycastle.util.encoders.Base64;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -24,7 +28,7 @@ public class UserService extends userGrpc.userImplBase {
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Override
-    public void login(User.LoginRequest request, StreamObserver<User.LogResponse> responseObserver) throws SQLException, ClassNotFoundException {
+    public void login(User.LoginRequest request, StreamObserver<User.LogResponse> responseObserver) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
         String userName = request.getUsername();
         String password = request.getPassword();
 
@@ -47,13 +51,18 @@ public class UserService extends userGrpc.userImplBase {
     }
 
     @Override
-    public void userRegistration(User.RegistrationRequest request, StreamObserver<User.RegistrationResponse> responseObserver) throws SQLException, ClassNotFoundException {
+    public void userRegistration(User.RegistrationRequest request, StreamObserver<User.RegistrationResponse> responseObserver) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         int userID = request.getUserid();
         String name = request.getName();
         String country = request.getCountry();
         String username = request.getUsername();
         String password = request.getPassword();
+
+        PasswordHasher passwordHasher = new PasswordHasher(password);
+        password = passwordHasher.generateHash();
+        String salt = passwordHasher.saltString;
+        System.out.println(password);
 
         ResultSet resultSet = checkPersonalInfo(userID);
 
@@ -66,7 +75,7 @@ public class UserService extends userGrpc.userImplBase {
                 PreparedStatement statement = connection.prepareStatement
                         ("INSERT INTO tbl_user_info VALUES('"+userID+"', '"+name+"', '"+country+"', '"+username+"')");
                 statement.executeUpdate();
-                PreparedStatement loginStatement = connection.prepareStatement("INSERT INTO tbl_user VALUES('"+username+"', '"+password+"')");
+                PreparedStatement loginStatement = connection.prepareStatement("INSERT INTO tbl_user VALUES('"+username+"', '"+password+"', '"+salt+"')");
                 loginStatement.executeUpdate();
                 response.setResponseMessage(name +
                                 " with User ID " + userID + " from " + country + " is now registered successfully").
@@ -85,12 +94,21 @@ public class UserService extends userGrpc.userImplBase {
         return statement.executeQuery();
     }
 
-    private ResultSet checkLogInCredential(String userName, String password) throws ClassNotFoundException, SQLException {
+    private ResultSet checkLogInCredential(String userName, String password) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = getConnection(databaseURL, user, pass);
+        PasswordHasher passwordHasher = new PasswordHasher(password);
+        String salt = null;
+        PreparedStatement saltGetterStatement = connection.prepareStatement("SELECT * FROM tbl_user");
+        ResultSet rs = saltGetterStatement.executeQuery();
+        while (rs.next()) {
+            if(rs.getString(1).equals(userName)) {
+                salt = rs.getString(3);
+            }
+        }
+        password = passwordHasher.generateHash(Base64.decode(salt));
         PreparedStatement statement = connection.prepareStatement("SELECT EXISTS(SELECT * FROM tbl_user" +
-                " WHERE userName =  BINARY '"+userName+"' && userpassword = BINARY '"+password+"')");
-
+                " WHERE userName =  '"+userName+"' && userpassword = '"+password+"')");
         return statement.executeQuery();
     }
 }
